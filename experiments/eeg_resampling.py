@@ -61,3 +61,6 @@ fs5 = 10
 eegdownt5 = sk_samplerate.resample(eegsigt, fs5/fs0, 'sinc_best')
 stackplot.stackplot_t(eegdownt5[0:int(20000*(fs5/fs0)),0:5])
 #%%
+
+
+eegupt3 = sk_samplerate.resample(eegsigt, fs0/fs3, 'sinc_best')
