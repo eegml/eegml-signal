@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<EDFbrowser_montage>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG FP1         </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG F7          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG F7          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG T3          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG T3          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG T5          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG T5          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG O1          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG FP2         </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG F8          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG F8          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG T4          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG T4          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG T6          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG T6          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG O2          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG FP1         </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG F3          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG F3          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG C3          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG C3          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG P3          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>10</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG P3          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG O1          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG FP2         </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG F4          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG F4          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG C4          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG C4          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG P4          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>9</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG P4          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG O2          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>7</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG FZ          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG CZ          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+<signalcomposition>
+    <num_of_signals>2</num_of_signals>
+    <voltpercm>100.000000</voltpercm>
+    <screen_offset>0.000000</screen_offset>
+    <color>7</color>
+    <filter_cnt>0</filter_cnt>
+    <fidfilter_cnt>0</fidfilter_cnt>
+    <signal>
+      <label>EEG CZ          </label>
+      <factor>1</factor>
+    </signal>
+    <signal>
+      <label>EEG PZ          </label>
+      <factor>-1</factor>
+    </signal>
+  </signalcomposition>
+
+
+  <pagetime>100000000</pagetime>
+</EDFbrowser_montage>
+

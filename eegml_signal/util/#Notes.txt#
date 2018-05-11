@@ -1,0 +1,186 @@
+
+10-5-System_Mastoids_EGI129.csd  file from the csd toolbox (version 1.1) of spherical and cartesian coordinates
+				 of 10-5 system of electrodes. note that there are some differences from eeglab
+				 http://psychophysiology.cpmc.columbia.edu/Software/CSDtoolbox/index.html
+				 This looks a like a spherical approximation.
+
+
+standard_1005.elc, standard_1020.elc, standard_alphabetic.elc, standard_postfixed.elc, standard_prefixed.elc, standard_primed.elc  are from eeglab9_0_4_5s/plugins/dipfit2.2/standard_BEM/elec/
+
+
+
+
+				 
+
+Note that the 10-20 and 10-10 change the names for a few of the electrodes
+
+10/20  to   10/10
+T3     ->   T7
+T4     ->   T8
+T5     ->   P7
+T6     ->   P8
+
+extended electrodes 
+T1     ->   FT9
+T2     ->   FT10
+I have not yet figured out exactly where the T1 and T2 electrodes are, though I
+think there are near FT9/FT10 in the 10/10 system. I believe the rule is
+something like one-third ofthe distance between the pre-auricular point to the
+lateral edge of the canthal fissue (eye). -CLM
+
+*** OK a bit more definitive info below on T1 and T2***
+
+http://sccn.ucsd.edu/pipermail/eeglablist/2006/001467.html
+> I've constructed a .ced file so that I can import channel locations to
+> EEGLab. However, I'm not pretty sure about the spherical  
+> coordinates of the
+> true anterior temporal electrodes T1/T2 (they're located 1cm above  
+> a point
+> that is one-third the anterior distance on a line from the external  
+> auditory
+> canal to the lateral canthus of the eye).
+> I'm looking forward to anybody's response.
+
+
+The T1/T2 electrodes are not defined in the Jasper (1958) 10-20  
+standard or the AES (American Electroencephalographic Society)  
+extended 10-20 standard (published in 1991 and 1994 and probably at  
+more occasions), but they are given in the Chatrian et al. 1985 Am J  
+EEG Technol paper. That paper is the proposal that led to the  
+extended 10-20 system. The T1 electrode is also shown in Chatrian et  
+al 1988 (see pubmed references below). The names have become slightly  
+different in the AES standard, but the locations are the same.
+
+There is one vertical "column" of electrodes running from Cz-T7  
+(T7=T3), and one "column" running from Fz-F7. In between those two  
+columns are the FC electrodes, i.e. FCz-FT7 (FT7=FC7). The T1  
+electrode seems to be located further down along the FC-line. That  
+would mean that the location of T1 is approximately the same as the  
+location of FT9.
+
+The name and positon of electrode FT9 is defined in the AES standard  
+(see below for the reference), and the position of that electrode is  
+also included in the spherical/BESA and realistic/standard-BEM  
+electrode files included with the DIPFIT plugin. The electrode system  
+definitions are clarified and extended to >=128 electodes in our  
+(Oostenveld & Praamstra) 2001 paper. That paper also describes the  
+FT9 location. I can send you a pdf reprint upon request (I will not  
+send it to the complete EEGLAB mailing list). On http://oase.uci.ru.nl/~roberto/index.php
+you can also find more information  
+and references.
+
+best regards,
+Robert
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Robert Oostenveld, PhD
+F.C. Donders Centre for Cognitive Neuroimaging
+Radboud University Nijmegen
+phone: +31-24-3619695
+http://www.ru.nl/fcdonders/
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+references:
+
+Chatrian GE, Lettich E, Nelson PL.
+Modified nomenclature for the "10%" electrode system.
+J Clin Neurophysiol. 1988 Apr;5(2):183-6.
+
+[No authors listed]
+American Electroencephalographic Society guidelines for standard  
+electrode position nomenclature.
+J Clin Neurophysiol. 1991 Apr;8(2):200-2.
+
+Oostenveld R, Praamstra P.
+The five percent electrode system for high-resolution EEG and ERP  
+measurements.
+Clin Neurophysiol. 2001 Apr;112(4):713-9.
+
+
+----------------------
+
+in .. ~/code/matlab/eeglab9_0_4_5s/plugins/dipfit2.2/standard_BESA:
+There are coordinates in 
+
+---------------------------------------------------------
+Hi Rodrigo,
+
+On 22 Nov 2006, at 11:02, Rodrigo Segnini wrote:
+> How important is to have a very precise electrode localization map,  
+> the
+> like you would produce for every subject using, say, the Polhemus  
+> system?
+
+I would say that it is important, but it depends on your goals.
+
+> The following article states, for example, an effect on source
+> localisation, but that is without using ICA.
+> ...
+
+Another study showing it is
+  Khosla D, Don M, Kwong B.
+  Spatial mislocalization of EEG electrodes -- effects on accuracy of  
+dipole estimation.
+  Clin Neurophysiol. 1999 Feb;110(2):261-71.
+
+The statements in both papers also apply to ICA, except that in ICA  
+it is more difficult to classify signal to noise ratio (since that  
+depends on the quality of the ICA unmixing).
+
+> You could state your improvement in percentual terms.
+
+Dipole location is not expressed in percent, but in mm or cm. The  
+accuracy of source localization depends on multiple factors:
+- noise in the data
+- location of the source (deep vs. superficial)
+- accuracy of the source model (i.e. can the active tissue be  
+represented as an infinitely small point source)
+- accuracy of the volume conduction model geometry (sphere, vs.  
+standard-realistic, vs. individual realistic)
+- accuracy of the volume conduction model tissue conductivities
+- accuracy of the volume conduction model numerical computation
+- accuracy of the location of the electrodes in the model
+- size of the recording area (i.e. whether electrodes are point-like,  
+or whether they average over larger pieces of scalp)
+- whether you interpret the source location on a template anatomical  
+MRI or on the individuals MRI
+- accuracy of the coregistration of the forward (source+volume) model  
+with anatomical MRI
+The list above probably is not even complete yet.
+
+What I would be mainly concerned about is the volume conduction model  
+errors.
+
+Furthermore, I would also be concerned about systematic  
+mislocalization of electrodes: Imagine the following: If you apply a  
+cap that is much too small for the subject, the electrodes all will  
+be higher on the head (since you cannot pull the cap sufficiently  
+downward). That means that the scalp distribution of a known source  
+will project _stronger_ on the lower electrodes on the cap (since  
+those electrodes are too high on the head). That means if you do not  
+take the placement of the electrodes into acocunt but use standard  
+locations, the estimated source location will be deeper than the true  
+location.
+
+Hence systematic errors are the most problematic. Even if you do all  
+source modelling to the best capabilities using standard software and  
+only have "random" errors in your data and electrode locations, I  
+would never trust the source location of EEG data to be more than  
+~2cm accurate. That is not to say that it can be done more accurate,  
+but that requires considerably more effort than I expect most EEGLAB/ 
+DIPFIT users to put into source localization. Remember that the  
+strong point of EEG is its temporal resolution: the source timecourse  
+is what distinguishes EEG from fMRI, and timecourse separation is the  
+strong point of ICA.
+
+best regards,
+Robert
+
+
+### making edf browser montages
+
+This is label dependent which can vary quite a bit
+
+
+### Additional Note mne-python also has these in mne/channels/data or loaded in montages.py
+- this includes standard positions for these
