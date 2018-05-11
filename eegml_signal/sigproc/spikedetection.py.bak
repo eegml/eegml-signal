@@ -1,0 +1,124 @@
+import sigproc.filters
+import numpy as np
+import matplotlib.pyplot as pyplot
+"""
+class DigitalSignal
+
+    
+"""
+
+class DigitalSignal(object):
+    """
+    basically it's a digitized representation of a signal
+    """
+    def __init__(self, x, fs):
+        self.x = x
+        self.fs = fs
+        
+def winnow(pts, fs, refract):
+    """
+    remove points that are likely to be part of the same spike by using a refractory period
+    @pts array of point indices
+    @fs  sample frequency
+    @refract refractory period in seconds (or same units as 1/fs)
+
+    return a list of winnowed candidate sample points
+    """
+    x0 = 0
+    si = 1.0/fs
+    # each pt is si secons apart
+    # can't have any closer than refract times apart
+    curpt = pts[0]
+    dr = round(refract*fs)
+    newarr = [curpt]
+    for ii in xrange(len(pts)):
+        if pts[ii]-curpt > dr:
+            curpt = pts[ii]
+            newarr.append(pts[ii])
+    return newarr
+
+
+
+class LevelDetecter(object):
+    """
+    self.fdata  := filtered data
+
+    """
+    def __init__(self, src_signal, fs, thresh=None,edge='pos', refract=0.1):
+        self.data = src_signal
+        self.fs=fs
+        self.fdata = None # filtered data
+        self.events = None
+        self.refract = refract # absolute refractory time for event
+        self.thresh=thresh
+        self.edge=edge
+        
+
+    def set_bandpass(self, low,high):
+        self.lowfreq=low
+        self.highfreq=high
+
+        fs=self.fs
+        self.low_norm_freq= (2.0*low)/fs
+        self.high_norm_freq = (2.0*high)/fs
+    
+
+    def run(self):
+        """
+        by default look for something 2 standard deviations above the mean
+        """
+        # filter the source signal
+        lowpass = sigproc.filters.LowPassFilter(self.highfreq, fs=self.fs)
+        highpass =sigproc.filters.HighPassFilter(self.lowfreq, fs=self.fs)
+
+        x = lowpass.filtfilt(self.data)
+        y = highpass.filtfilt(x)
+        self.fdata = y
+
+        self.ystd = y.std()
+        self.ymean = y.mean() # should be zero
+
+        if not self.thresh:
+            self.thresh = self.ymean +2.0*self.ystd
+
+        if self.edge == 'pos':
+            candidates = np.where(y>self.thresh)
+        elif self.edge == 'neg':
+            candidates = np.where(y<self.thresh)
+
+        self.rawcandidates = candidates
+        # winnow at 
+        wincan = winnow(candidates[0], self.fs, self.refract)
+        self.events = wincan
+
+        return self.events # which index time to return
+
+    def plotcandidates(self, newfigure=True):
+        if newfigure:
+            pyplot.figure()
+        #pyplot.plot(self.gettimearr(), self.data)
+        #pyplot.plot(self.gettimearr(), self.events[0])
+        pyplot.title("winnowed candidates")
+        pyplot.plot(self.fdata)
+        pyplot.plot(self.events, self.fdata[self.events], 'o')
+
+    def plotrawcandidates(self, newfigure=True):
+        if newfigure:
+            pyplot.figure()
+        #pyplot.plot(self.gettimearr(), self.data)
+        #pyplot.plot(self.gettimearr(), self.events[0])
+        pyplot.title("raw candidates")
+        pyplot.plot(self.fdata)
+        pyplot.plot(self.rawcandidates[0], self.fdata[self.rawcandidates], 'o')
+
+
+
+if __name__=='__main__':
+    import eegquant.h5files
+
+    datafile = eegquant.h5files.H5EegFile()
+    fn = r'/home/clee/datasets/RR-BRAL-EEG/NKT/EEG2100/da282qa8_1-1+.h5'
+    # fn = r'da282qa8_1-1+.h5'
+    datafile.open_h5eegfile(fn)
+    datafile.read_into_memory()
+    

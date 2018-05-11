@@ -1,0 +1,132 @@
+"""
+this module has funtions ability to read and eventually write simple csv tables of the form
+with commas as separators
+
+"Stimulus type","column (in python)","t0","t1"
+
+where t0 and t1 are an ISO date and time parseable by dateutil.parser.parse()
+note to get the right offsets you must have an entry for the start of the record (see example below)
+
+
+"""
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+datetimepoints_example='''"Stimulus type","column (in python)","t0","t1"
+"record start",2,13:04:30,13:53:00
+"baseline",2,13:53:00,13:59:59
+"Spindle #1 (15 Hz, numspikes_at_peak 2)",2,14:00:00,14:07:00
+"baseline",2,14:07:01,14:08:59
+"Spindle #2 (15 Hz, numspikes_at_peak 2)Control for laser noise/crosstalk (no ch 21)",2,14:09:00,14:16:00
+"baseline",2,14:16:01,14:18:59
+"Spindle #3 (15 Hz, numspikes_at_peak 12)",2,14:19:00,14:26:00
+"baseline",2,14:26:01,14:27:59
+"Spindle #4 (15 Hz, numspikes_at_peak 8)",2,14:28:03,14:35:00
+"baseline",2,14:35:01,14:36:59
+"Spindle #5 (10 Hz, numspikes_at_peak 12)",2,14:37:00,14:44:00
+"baseline",2,14:44:01,14:45:59
+"Spindle #6 (10 Hz, numspikes_at_peak 2)",2,14:46:00,14:53:00
+"baseline",2,14:53:01,14:54:59
+"Spindle #7 (10 Hz, numspikes_at_peak 8)",2,14:55:00,15:02:00
+"baseline",2,15:02:01,15:03:59
+"Spindle #8 (7 Hz, numspikes_at_peak 2)",2,15:06:00,15:13:00
+"baseline",2,15:13:01,15:14:59
+"Spindle #9 (7 Hz, numspikes_at_peak 8)",2,15:15:00,15:22:00
+"baseline",2,15:22:01,15:23:59
+'''
+
+
+import csv,datetime
+import dateutil.parser
+try:
+    from collections import OrderedDict  # python 2.7 
+except ImportError:
+    from ordereddict import OrderedDict  # require pip install ordereddict
+    
+
+#fn = 'chrisEndpointsExtractedTable.csv'
+def parse_datetimepoints(fp, verbose=False):
+    """
+    there must be an entry for the begining of the record
+    because that determines the offset
+    returns dsections
+    """
+
+    sniff = csv.Sniffer()
+    sample = fp.readline()
+    fp.seek(0)
+    rdr = csv.reader(fp)
+    if sniff.has_header(sample):
+        top=next(rdr) # get the column labels
+        
+    sections = []
+    for r in rdr:
+        if verbose:  print(r)
+        # if verbose:  print repr(r)
+        d1 = dateutil.parser.parse(r[2])
+        if verbose:  print("  ", d1)
+        d2 = dateutil.parser.parse(r[3])
+        if verbose:  print("  ", d2)
+        if verbose:  print("  relative ", d2-d1)
+        delta=d2-d1
+        print("delta.seconds:", delta.seconds, "microseconds", delta.microseconds)
+        newrow = [r[0], int(r[1]), r[2], r[3], d1, d2, delta] # <description> <col#> <txt date t0> <txt date t1> <datetime t0> <datetime t1> <reldelta>
+        sections.append(newrow)
+
+    # use the earliest time we have for the start time
+    # 
+    starttime = sections[0][4]
+    dsections = []
+    for row in sections:
+        t1 = row[4]-starttime
+        row.append(t1.seconds) # add the start time of the section in seconds since beginning
+        t2 = row[5]-starttime
+        row.append(t2.seconds)
+        delta = t2-t1 # delta.seconds, delta.microseconds]
+        row.append(delta.seconds)
+        row.append(delta.microseconds)
+        print(row)
+
+        od = OrderedDict()
+        od['description']=row[0]
+        od['channel_number']=row[1]
+        od['start_section_dtime']=row[4]
+        od['end_section_dtime']=row[5]
+        od['start_time_sec']= t1.seconds
+        od['end_time_sec']= t2.seconds
+        od['duration_sec']= delta.seconds
+        od['duration_reldelta'] = delta
+        od['duration_microsec']= delta.microseconds
+        od['start_section_text']=row[2]
+        od['end_section_text']=row[3]
+        
+        dsections.append(od)
+    return dsections
+
+
+def test_parse_datetimepoints():
+    import io as StringIO
+
+    ds = parse_datetimepoints(StringIO.StringIO(datetimepoints_example))
+    assert ds[1]['description'] == 'baseline'
+    assert ds[1]['start_section_dtime'] == datetime.datetime(2011, 6, 20, 13, 53)
+    return ds
+
+
+def pprint_ordered_dict(od):
+    print("{", end=' ')
+    for k,v in list(od.items()):
+        print(k,'=',repr(v),',')
+    print("}")
+
+def write_dsections(fn, dsections,mode='w+'):
+    fp=file(fn, mode)
+    fp.write(",".join(list(dsections[0].keys()))+'\n')
+    wtr= csv.DictWriter(fp, fieldnames=list(dsections[0].keys()))
+    # write the header names
+    
+    
+    for rowdict in dsections:
+        wtr.writerow(rowdict)
+    
+
