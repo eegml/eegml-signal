@@ -1,4 +1,6 @@
 # easy to use filters
+# see FIR filter design with Python and Scipy: by Matti Pastell
+#     url = http://mpastell.com/2010/01/18/fir-with-scipy/
 # given a FIR filter which has N taps, the dealy is N-2(2*Fs)
 from __future__ import division
 
@@ -65,6 +67,15 @@ class LowPassIdealizedFilter(object):
 
 
 class HighPassFilter(LowPassIdealizedFilter):
+    """FIR lowpass filter using idealized window approach
+    f0hz cutoff frequency in hz
+    fs sample rate
+
+    designed using ideal filter method from scipy with spectrual inversion applied
+
+    Note this produces a lot of distortion because of the rapid cutoffs
+
+    """    
     def __init__(self, f0hz, fs=1.0, order=5, window='hamming'):
         LowPassIdealizedFilter.__init__(self,f0hz, fs, order, window='hamming')
         # now do spectral inversion
@@ -124,7 +135,7 @@ class GaussianLowPassFilter(LowPassIdealizedFilter):
         self.arr_coef = self.arr_coef/sum(self.arr_coef)
         
         
-    
+## try some designed FIR filters    
 """
 A simple moving average corresponds to a uniform probability distribution and thus its filter width of size n has standard deviation \sqrt{({\sigma}^2-1)/12}. Thus m moving averages with sizes {\sigma}_1,\dots,{\sigma}_m yield a standard deviation of
 
@@ -132,6 +143,154 @@ A simple moving average corresponds to a uniform probability distribution and th
 
 (Note that standard deviations do not sum up, but variances do.)
 """
+
+"""
+In [3]: remez?
+Signature: remez(numtaps, bands, desired, weight=None, Hz=1, type='bandpass', maxiter=25, grid_density=16)
+Docstring:
+Calculate the minimax optimal filter using the Remez exchange algorithm.
+
+Calculate the filter-coefficients for the finite impulse response
+(FIR) filter whose transfer function minimizes the maximum error
+between the desired gain and the realized gain in the specified
+frequency bands using the Remez exchange algorithm.
+
+Parameters
+----------
+numtaps : int
+    The desired number of taps in the filter. The number of taps is
+    the number of terms in the filter, or the filter order plus one.
+bands : array_like
+    A monotonic sequence containing the band edges in Hz.
+    All elements must be non-negative and less than half the sampling
+    frequency as given by `Hz`.
+desired : array_like
+    A sequence half the size of bands containing the desired gain
+    in each of the specified bands.
+weight : array_like, optional
+    A relative weighting to give to each band region. The length of
+    `weight` has to be half the length of `bands`.
+Hz : scalar, optional
+    The sampling frequency in Hz. Default is 1.
+type : {'bandpass', 'differentiator', 'hilbert'}, optional
+    The type of filter:
+
+      * 'bandpass' : flat response in bands. This is the default.
+
+      * 'differentiator' : frequency proportional response in bands.
+
+      * 'hilbert' : filter with odd symmetry, that is, type III
+                    (for even order) or type IV (for odd order)
+                    linear phase filters.
+
+maxiter : int, optional
+    Maximum number of iterations of the algorithm. Default is 25.
+grid_density : int, optional
+    Grid density. The dense grid used in `remez` is of size
+    ``(numtaps + 1) * grid_density``. Default is 16.
+
+Returns
+-------
+out : ndarray
+    A rank-1 array containing the coefficients of the optimal
+    (in a minimax sense) filter.
+
+See Also
+--------
+firls
+firwin
+firwin2
+minimum_phase
+
+References
+----------
+.. [1] J. H. McClellan and T. W. Parks, "A unified approach to the
+       design of optimum FIR linear phase digital filters",
+       IEEE Trans. Circuit Theory, vol. CT-20, pp. 697-701, 1973.
+.. [2] J. H. McClellan, T. W. Parks and L. R. Rabiner, "A Computer
+       Program for Designing Optimum FIR Linear Phase Digital
+       Filters", IEEE Trans. Audio Electroacoust., vol. AU-21,
+       pp. 506-525, 1973.
+
+Examples
+--------
+We want to construct a filter with a passband at 0.2-0.4 Hz, and
+stop bands at 0-0.1 Hz and 0.45-0.5 Hz. Note that this means that the
+behavior in the frequency ranges between those bands is unspecified and
+may overshoot.
+
+>>> from scipy import signal
+>>> bpass = signal.remez(72, [0, 0.1, 0.2, 0.4, 0.45, 0.5], [0, 1, 0])
+>>> freq, response = signal.freqz(bpass)
+>>> ampl = np.abs(response)
+
+>>> import matplotlib.pyplot as plt
+>>> fig = plt.figure()
+>>> ax1 = fig.add_subplot(111)
+>>> ax1.semilogy(freq/(2*np.pi), ampl, 'b-')  # freq in Hz
+>>> plt.show()
+File:      /usr/local/anaconda3/lib/python3.6/site-packages/scipy/signal/fir_filter_design.py
+Type:      function
+"""
+
+
+def fir_lowpass(fs, cutoff_freq, transition_width, numtaps):
+    """
+    return a function with optimized fir filtering
+    this will induce a lag
+    """
+    Nyquistfreq = 0.5 * fs
+    Fbands = [0, cutoff_freq, cutoff_freq + transition_width, Nyquistfreq]
+    Fgains = [1, 0]
+    taps = scipy.signal.remez(numtaps, Fbands, Fgains, Hz=fs)
+
+    def func(x):
+        return scipy.signal.lfilter(taps,[1], x)
+
+    return func
+
+def fir_lowpass_zerolag(fs, cutoff_freq, transition_width, numtaps):
+    """
+    return a function with optimized fir filtering
+    this will not induce a lag but applies filter twice (forward and backward)
+
+    """
+
+    Fbands = [0, cutoff_freq, cutoff_freq + transition_width, 0.5*fs]
+    Fgains = [1, 0]
+    taps = scipy.signal.remez(numtaps, Fbands, Fgains, Hz=fs)
+
+    def func(x):
+        return scipy.signal.filtfilt(taps,[1], x)
+
+    return func
+
+    
+def fir_highpass(fs, cutoff_freq, transition_width, numtaps):
+
+    Nyquistfreq = 0.5 * fs
+    Fbands = [0, cutoff_freq- transition_width, cutoff_freq, Nyquistfreq]
+    Fgains = [0, 1]
+    taps = scipy.signal.remez(numtaps, Fbands, Fgains, Hz=fs)
+
+    def func(x):
+        return scipy.signal.lfilter(taps,[1], x)
+
+    return func
+
+def fir_highpass_zerolag(fs, cutoff_freq, transition_width, numtaps):
+    #Fbands = [0, cutoff_freq, cutoff_freq + transition_width, 0.5*fs]
+
+    Nyquistfreq = 0.5 * fs
+    Fbands = [0, cutoff_freq- transition_width, cutoff_freq, Nyquistfreq]
+    Fgains = [0, 1]
+    taps = scipy.signal.remez(numtaps, Fbands, Fgains, Hz=fs)
+
+    def func(x):
+        return scipy.signal.filtfilt(taps,[1], x)
+
+    return func
+
 
 def highpassRC(x, dt, RC):
     """
@@ -148,7 +307,7 @@ def highpassRC(x, dt, RC):
 
 # scipy.signal.iirdesign(wp, ws, gpass, gstop, analog=0, ftype='ellip', output='ba')
 
-class PassBand(object):
+class PassBandIIR(object):
     """
     b,a = scipy.signal.iirdesign(wp = [0.05, 0.3], ws= [0.02, 0.35], gstop= 60, gpass=1,
                            ftype='ellip')
