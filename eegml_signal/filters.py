@@ -2,7 +2,11 @@
 # see FIR filter design with Python and Scipy: by Matti Pastell
 #     url = http://mpastell.com/2010/01/18/fir-with-scipy/
 # given a FIR filter which has N taps, the dealy is N-2(2*Fs)
+# see https://www.martinos.org/mne/stable/auto_tutorials/plot_background_filtering.html
+
+
 from __future__ import division
+import math
 
 from builtins import range
 from builtins import object
@@ -15,6 +19,29 @@ def calc_ratios(f0hz, fs):
     
     """
     return f0hz/(fs/2.0)
+
+# see firpmord
+
+def fred_harris_lowpass_order_guess(fs, df, d1, d2):
+    """
+    imagine the original gain was 1.0, then @d1 and @d2
+    are the left over signal in the pass band (d1) and the stop band (d2)
+    @fs - sample frequency
+    @df - width of the pass band in Hz (same units as fs)
+
+    fred harris rule of thumb for choosing order of low-pass filter 
+
+    order N = (fs/df) * 
+    orderN = (fs/delta(f)) * [atten(dB)/22]
+    deflta(f) is transitionband in same units of fs,
+    fs is sample rate
+    atten(dB) is the target rejection in dB
+    atten(dB) = 20 * log10(d2)
+    d2 is the amplitude of signal ripple in the stop band
+    d1 is the half-height of the ripple in the pass pand
+    """
+    # source:url= https://dsp.stackexchange.com/questions/37646/filter-order-rule-of-thumb
+    orderN = (fs/df) * 20*math.log10(d2)/22
 
 # think about crossover point to using fft
 class AbstractDigitalFilter(object):
@@ -234,7 +261,7 @@ Type:      function
 """
 
 
-def fir_lowpass(fs, cutoff_freq, transition_width, numtaps):
+def fir_lowpass_remez(fs, cutoff_freq, transition_width, numtaps):
     """
     return a function with optimized fir filtering
     this will induce a lag
@@ -249,7 +276,7 @@ def fir_lowpass(fs, cutoff_freq, transition_width, numtaps):
 
     return func
 
-def fir_lowpass_zerolag(fs, cutoff_freq, transition_width, numtaps):
+def fir_lowpass_remez_zerolag(fs, cutoff_freq, transition_width, numtaps):
     """
     return a function with optimized fir filtering
     this will not induce a lag but applies filter twice (forward and backward)
@@ -266,7 +293,7 @@ def fir_lowpass_zerolag(fs, cutoff_freq, transition_width, numtaps):
     return func
 
     
-def fir_highpass(fs, cutoff_freq, transition_width, numtaps):
+def fir_highpass_remez(fs, cutoff_freq, transition_width, numtaps):
 
     Nyquistfreq = 0.5 * fs
     Fbands = [0, cutoff_freq- transition_width, cutoff_freq, Nyquistfreq]
@@ -278,7 +305,38 @@ def fir_highpass(fs, cutoff_freq, transition_width, numtaps):
 
     return func
 
-def fir_highpass_zerolag(fs, cutoff_freq, transition_width, numtaps):
+def fir_lowpass_firwin_ff(fs, cutoff_freq, numtaps):
+    Nquistfreq = 0.5 *fs
+    
+    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=True, nyq=Nquistfreq)
+
+    def func(x):
+        return scipy.signal.filtfilt(taps, [1], x)
+
+    return func
+
+
+def fir_highpass_firwin_ff(fs, cutoff_freq, numtaps):
+    """
+    try @cutoff_freq as a float or 1D array_like
+    Cutoff frequency of filter (expressed in the same units as `nyq`)
+    OR an array of cutoff frequencies (that is, band edges). In the
+    latter case, the frequencies in `cutoff` should be positive and
+    monotonically increasing between 0 and `nyq`.  The values 0 and
+    `nyq` must not be included in `cutoff`.
+    """
+    Nyquistfreq = 0.5 * fs
+    # set pass_zero=False so DC values are not passsed
+    if not numtaps % 2: # if even
+        numtaps = numtaps +1
+    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=False, nyq=Nyquistfreq) # window='hamming'
+
+    def func(x):
+        return scipy.signal.filtfilt(taps, [1], x)
+
+    return func
+            
+def fir_highpass_remez_zerolag(fs, cutoff_freq, transition_width, numtaps):
     #Fbands = [0, cutoff_freq, cutoff_freq + transition_width, 0.5*fs]
 
     Nyquistfreq = 0.5 * fs
