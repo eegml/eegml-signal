@@ -308,7 +308,7 @@ def fir_highpass_remez(fs, cutoff_freq, transition_width, numtaps):
 def fir_lowpass_firwin_ff(fs, cutoff_freq, numtaps):
     Nquistfreq = 0.5 *fs
     
-    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=True, nyq=Nquistfreq)
+    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=True, fs=fs)
 
     def func(x):
         return scipy.signal.filtfilt(taps, [1], x)
@@ -329,7 +329,8 @@ def fir_highpass_firwin_ff(fs, cutoff_freq, numtaps):
     # set pass_zero=False so DC values are not passsed
     if not numtaps % 2: # if even
         numtaps = numtaps +1
-    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=False, nyq=Nyquistfreq) # window='hamming'
+    taps = scipy.signal.firwin(numtaps, cutoff=cutoff_freq, pass_zero=False,
+                               fs=fs) # window='hamming'
 
     def func(x):
         return scipy.signal.filtfilt(taps, [1], x)
