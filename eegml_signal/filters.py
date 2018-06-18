@@ -12,6 +12,7 @@ from builtins import range
 from builtins import object
 import scipy
 import scipy.signal
+import numpy as np
 
 def calc_ratios(f0hz, fs):
     """
@@ -351,6 +352,18 @@ def fir_highpass_remez_zerolag(fs, cutoff_freq, transition_width, numtaps):
     return func
 
 
+def notch_filter_iir_ff(notch_freq, fs, Q=30.0):
+    nyquist = fs/2.0
+    w0 = notch_freq/nyquist # normalized frequency
+    q = Q/2.0
+
+    b, a = scipy.signal.iirnotch(w0, q)
+
+    def filter_func(x):
+        return scipy.signal.filtfilt(b,a,x)
+
+    return filter_func
+
 def highpassRC(x, dt, RC):
     """
     a simple RC high-pass filter code, naive implementation
@@ -493,19 +506,20 @@ def bandpass2(lpsf, lpcf, hpcf, hpsf, Fs, gpass=3, gstop=20):
 
 
 if __name__=='__main__':
-    from pylab import *
+    import matplotlib.pyplot as plt
     
-    si = 0.01 # sample interval of 0.01 s
-    fs = int(1.0/si)
-    nfreq = fs/2
-    t = arange(0.0,10.0,si) # 10 seconds of time 
-    # frequency starts at 1Hz and by 10.0s reaches 40Hz
-    chrp = scipy.signal.chirp(t, 1.0, 10.0, 40.0)
+    fs = 200.0
+    si = 1.0/fs # 
+    nyqfreq = fs/2.0
+
+    t = np.arange(0.0,10.0,si) # 10 seconds of time 
+    # frequency starts at 1Hz and by 10.0s reaches 80Hz
+    chrp = scipy.signal.chirp(t, 1.0, 10.0, 80.0)
 
     gf = GaussianLowPassFilter(f0hz=20, fs=fs)
     gfchrp = gf.filter(chrp)
 
-    fig,axs =subplots(2,1,sharex=True)
+    fig,axs = plt.subplots(2,1,sharex=True)
     axs[0].plot(t,chrp)
 
     axs[1].plot(t, gfchrp)
@@ -513,9 +527,51 @@ if __name__=='__main__':
     # now try lowpass2
     lpass = lowbutter2(20.0, 23.0, fs)
     lp_chrp = lpass(chrp)
+    fig.savefig('gaussian_lowpass.svg')
     
-    fig,axs = subplots(3,1)
+    fig,axs = plt.subplots(3,1)
     axs[0].plot(t,chrp)
     axs[1].plot(t, lp_chrp)
-    axs[2].specgram(chrp, fs=fs)
-    title('butter lowpass')
+    axs[2].specgram(chrp, Fs=fs)  
+    plt.title('butter lowpass')
+
+    fig.savefig('butter_lowpass.svg')
+
+    # now look at notch filter
+    notch_filter = notch_filter_iir_ff(notch_freq=60.0, Q=60, fs=fs)
+    notch_chrp = notch_filter(chrp)
+    
+    fig,axs = plt.subplots(3,1)
+    axs[0].plot(t,chrp)
+    axs[1].plot(t,notch_chrp)
+    axs[2].specgram(notch_chrp,Fs=fs)
+    fig.savefig('notch_chirp.svg')
+    
+
+    # test out firwin on 200Hz sample rate
+    # self._highpass_cache['0.1 Hz'] = esfilters.fir_highpass_firwin_ff(self.fs, cutoff_freq=0.1,
+    #                                                                   numtaps=int(self.fs)) 
+
+    
+    #h = signal.firwin(numtaps, cutoff=[55.0, 65.0], pass_zero=True, fs=fs)
+    # see scipy.signal.iirnotch
+    #self._highpass_cache['0.3 Hz'] = esfilters.fir_highpass_firwin_ff(self.fs, cutoff_freq=0.3,
+    # numtaps=int(self.fs)) 
+
+    # #ff = esfilters.fir_highpass_remez_zerolag(fs=self.fs, cutoff_freq=1.0, transition_width=0.5, numtaps=int(2*self.fs))
+    # ff = esfilters.fir_highpass_firwin_ff(fs=self.fs, cutoff_freq=1.0, numtaps=int(2*self.fs))
+    # self._highpass_cache['1 Hz'] = ff
+    # #ff = esfilters.fir_highpass_remez_zerolag(fs=self.fs, cutoff_freq=5.0, transition_width=2.0, numtaps=int(0.2*self.fs))
+    # ff = esfilters.fir_highpass_firwin_ff(fs=self.fs, cutoff_freq=5.0, numtaps=int(0.2*self.fs))
+    # self._highpass_cache['5 Hz'] = ff
+
+    # firstkey = '1 Hz' # list(self._highpass_cache.keys())[0]
+    # self.current_hp_filter = self._highpass_cache[firstkey]
+
+        
+    # self._lowpass_cache = OrderedDict()
+    # self._lowpass_cache['None'] = None
+    # self._lowpass_cache['15 Hz'] = esfilters.fir_lowpass_firwin_ff(fs=self.fs, cutoff_freq=15.0, numtaps=int(self.fs/2.0))
+    # self._lowpass_cache['30 Hz'] = esfilters.fir_lowpass_firwin_ff(fs=self.fs, cutoff_freq=30.0, numtaps=int(self.fs/4.0))
+    # self._lowpass_cache['50 Hz'] = esfilters.fir_lowpass_firwin_ff(fs=self.fs, cutoff_freq=50.0, numtaps=int(self.fs/4.0))
+    # self._lowpass_cache['70 Hz'] = esfilters.fir_lowpass_firwin_ff(fs=self.fs, cutoff_freq=70.0, numtaps=int(self.fs/4.0))
