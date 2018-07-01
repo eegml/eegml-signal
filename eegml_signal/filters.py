@@ -507,6 +507,8 @@ def bandpass2(lpsf, lpcf, hpcf, hpsf, Fs, gpass=3, gstop=20):
 
 if __name__=='__main__':
     import matplotlib.pyplot as plt
+    plt.rcParams['figure.figsize'] = (11,8)
+    plt.rcParams['figure.dpi'] = 200
     
     fs = 200.0
     si = 1.0/fs # 
