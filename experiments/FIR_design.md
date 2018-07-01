@@ -151,4 +151,4 @@ show()
 ~~~~~~~~~~~~~
 
 ![Bandpass FIR filter.](figures/FIR_design_figure4_1.png)
-
+o
