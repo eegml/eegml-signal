@@ -12,7 +12,7 @@ for FIR low-pass filters, see Fred Harris function below
 All signal processing has a quick discussion on choice of filters
 https://allsignalprocessing.com/selecting-a-filter-which-one/
 
-Material below is from "How to chose the number of taps (order = N-1 for fir)?"
+Material below is from "How to chose the number of taps (orde r= N-1 for fir)?"
 source: https://dsp.stackexchange.com/questions/31066/how-many-taps-does-an-fir-filter-need
 
 ### Bellanger formula
